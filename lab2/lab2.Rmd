@@ -1,0 +1,104 @@
+---
+title: "lab2"
+author: "Antoniuk Davyd"
+date: "2024-03-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(moments)
+library(psych)
+```
+
+```{r}
+srednia_proby <- function(x){
+  sum <- 0
+  for(i in 1:length(x)){
+    sum=sum+x[i]
+  }
+  return (sum/length(x))
+}
+
+wariancja_w_probie <- function(x){
+  srednia <- srednia_proby(x)
+  sum <- 0
+  for(i in 1:length(x)){
+    sum = sum + (x[i]-srednia)**2
+  }
+  return(sum/(length(x)))
+}
+
+skocznosc <- function(x){
+  suma <- 0
+  n <- length(x)
+  srednia <- srednia_proby(x)
+  wariancja <- wariancja_w_probie(x)
+  kw_wariancja <- sqrt(wariancja)
+  for(i in 1:length(x)){
+    suma = suma + (x[i]-srednia)**3
+  }
+  return(((1/n)*suma)/(kw_wariancja**3))
+}
+
+kurtoz <- function(x){
+  suma <- 0
+  n <- length(x)
+  srednia <- srednia_proby(x)
+  wariancja <- wariancja_w_probie(x)
+  kw_wariancja <- sqrt(wariancja)
+  for(i in 1:length(x)){
+    suma = suma + (x[i]-srednia)**4
+  }
+  return(((1/n)*suma)/(kw_wariancja**4))
+}
+```
+
+
+A
+```{r}
+skocznosc(iris$Petal.Length)
+kurtoz(iris$Sepal.Length)
+
+skewness(iris$Petal.Length)
+kurtosis(iris$Sepal.Length)
+
+kurtosi(iris$Sepal.Length) #eksces
+
+skewness_iris <- apply(iris[, -5], 2, skewness)
+kurtosis_iris <- apply(iris[, -5], 2, kurtosis)
+
+```
+B
+```{r}
+iris_rozkłady <- data.frame(
+  Cecha = names(skewness_iris),
+  Skośność = skewness_iris,
+  Kurtoza = kurtosis_iris,
+  Rodzaj_Rozkładu = ifelse(abs(skewness_iris) > 0 & abs(kurtosis_iris) > 0, "Ogólny", "Normalny")
+)
+iris_rozkłady
+```
+
+C
+```{r}
+skewness_moments <- sapply(iris[, -5], skewness)
+kurtosis_moments <- sapply(iris[, -5], kurtosis)
+skewness_moments
+kurtosis_moments
+```
+
+```{r}
+# (D) Przedstaw wyniki w tabeli
+result_table <- data.frame(
+  Feature = names(skewness_iris),
+  Skewness_Custom = skewness_iris,
+  Kurtosis_Custom = kurtosis_iris,
+  Skewness_Moments = skewness_moments,
+  Kurtosis_Moments = kurtosis_moments
+)
+```
+

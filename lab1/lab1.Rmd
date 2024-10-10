@@ -1,0 +1,117 @@
+---
+title: "test"
+author: "Antoniuk Davyd"
+date: "2024-02-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Cechy
+ 
+Ozone -
+Solar.R -
+Wind -
+cechy ilościowi określone na skali jednorazowej
+ 
+Temp -
+jest również cechą ilościową okreslona ponieważ jest mieżona w skali Farenhaita która posiada 0 absolutnie
+ 
+Month Day -
+cechy jakościowe określone na ceche porządkowej dla przypisanego miesiąca i dnia
+
+```{r}
+library(datasets)
+data <- airquality
+data <- na.omit(data)
+data
+```
+
+```{r}
+hist(data$Ozone,freq=F,main='',xlab='',col='blue')
+lines(density(data$Ozone), col='red',lwd=2)
+
+hist(data$Solar.R,freq=F,main='',xlab='',col='blue')
+lines(density(data$Solar.R), col='red',lwd=2)
+
+hist(data$Wind,freq=F,main='',xlab='',col='blue')
+lines(density(data$Wind), col='red',lwd=2)
+
+hist(data$Temp,freq=F,main='',xlab='',col='blue')
+lines(density(data$Temp), col='red',lwd=2)
+
+hist(data$Month,freq=F,main='',xlab='',col='blue')
+lines(density(data$Month), col='red',lwd=2)
+
+hist(data$Day,freq=F,main='',xlab='',col='blue')
+lines(density(data$Day), col='red',lwd=2)
+```
+
+```{r}
+hist(data$Ozone,freq=F,col='salmon',
+main='',xlab='')
+par(new = TRUE)
+boxplot(data$Ozone,horizontal = TRUE,col='seagreen1',axes=F)
+
+hist(data$Solar.R,freq=F,col='salmon',
+main='',xlab='')
+par(new = TRUE)
+boxplot(data$Solar.R,horizontal = TRUE,col='seagreen1',axes=F)
+
+hist(data$Wind,freq=F,col='salmon',
+main='',xlab='')
+par(new = TRUE)
+boxplot(data$Wind,horizontal = TRUE,col='seagreen1',axes=F)
+
+hist(data$Temp,freq=F,col='salmon',
+main='',xlab='')
+par(new = TRUE)
+boxplot(data$Temp,horizontal = TRUE,col='seagreen1',axes=F)
+
+hist(data$Month,freq=F,col='salmon',
+main='',xlab='')
+par(new = TRUE)
+boxplot(data$Month,horizontal = TRUE,col='seagreen1',axes=F)
+
+hist(data$Day,freq=F,col='salmon',
+main='',xlab='')
+par(new = TRUE)
+boxplot(data$Day,horizontal = TRUE,col='seagreen1',axes=F)
+```
+
+```{r}
+boxplot(Ozone ~ Month, data = data, col = "blue", border = "black",
+        main = "Wykres pudełkowy poziomu ozonu w powietrzu w różnych miesiącach",
+        xlab = "Miesiąc", ylab = "Poziom ozonu")
+```
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

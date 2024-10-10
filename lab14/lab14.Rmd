@@ -1,0 +1,118 @@
+---
+title: "lab14"
+author: "Antoniuk Davyd"
+date: "2024-06-10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(datasets)
+library(readxl)
+library(stats)
+library(DescTools)
+library(ggplot2)
+```
+
+s(x)=a*x+b
+Y=b_0+b_1*X+E
+
+Zależność średnicy drzewa od wysokości
+
+Y-średnica
+
+X-wysokość
+
+summary(ln())
+
+Tets istotności dla wspólczynnika modelu liniowego
+
+$H0: b_i=0$
+$H1: b_i\neq0$
+
+Statystyka i obszar krytyczny/ p-wartość
+
+
+```{r}
+#A
+# cor(trees$Girth,trees$Height)
+cor.test(trees$Girth,trees$Height)
+```
+```{r}
+#B
+model <- lm(Girth ~ Height,data=trees)
+summary(model)
+#Std.Error - Standardowy Błąd
+```
+Patrząc na wydruk funkcji summary(lm()) możemy powiedzić że średnica drzewa załeży od wysokości w taki sposób:
+średnia = -6.18839 + 0.25575*wysokość - zbudowany model
+Po tym modelu już możemy zobaczyć że jak rośnie wysokość to średnica średnio rośnie i jak różnica maleje to średnica średnio maleje.
+Patrząc na wspólczynniki widzimy, że nasz bląd b_0 jest dość duży ponieważ jest określony blędem okolo -6.Natomiast drugi wspólczynnik jest owalczony mniejszem błędem okolo 0,256.
+Estymator b_1 jest statystycznie istotny.
+Patrząc na p wartość naszego testu która wynosi 0.
+W pierwszej linijce widzimy że p-wartość jest powyżej od pięciu setnych co oznacza że nie mamy podstaw do odrzucenia hipotezy zerowej a więc możemy przypuściać że ten wspólczynnik b_0 jest estymatorem punktowym, ale test wykazuje że on właściwie jest równy zero.
+W drugiej linijce widzimy że p-wartość jest mniejsza niż pięć setnych to znaczy że odrzucamy hipotezę zerową, że b_1, a więc ten wspólczynnik jest równy 0.
+A więc możemy zrobić wniosek że jakość takiego modelu nie jest taką dobrą, ponieważ dostajemy estymator punktowy a mimo wszystko test statystyczny  mówi że on jest właściwie spadkiem(równy zero) i nie mamy podstaw żeby jego nie odrzucić.
+
+Jeszcze z naszego testu mamy informację o błądu modelu(odchylenie standardowe błędu losowego). Wspólczynnik determinacji(R^2) równy 0.2679 który mówi jaki procent jest wyjaśniany w naszym modeli.Model wyjaśnia o 27% zmienności średnicy.
+
+Podsumowanie:
+Estymatory punktowe wspólczynników modelu -6.18839; 0.25575
+Oszacowany błąd estymatorów 5.96020 ; 0.07816
+Testy na wspólczynniki regresji 0.30772 ; 0.00276
+Wspólczynnik determinacji 0.2697
+
+```{r}
+#D_1
+#Dla tego że beta1=0.2557471 to na tyle wyrośnie średnica 
+model$coefficients[2]
+```
+Jeśli wysokość wzrośnie o cal, to średnica wzrośni o 26 setnych stopy
+
+```{r}
+#Naprzyklad biorąc wysokości 90 i 91 otrzymamy
+srednia1 <- model$coefficients[1]+model$coefficients[2]*90
+srednia2 <- model$coefficients[1]+model$coefficients[2]*91
+srednia2-srednia1
+```
+```{r}
+#p wartosc 
+```
+
+
+```{r}
+#D_2
+wysokosc <- 87
+srednia <- model$coefficients[1]+model$coefficients[2]*wysokosc
+srednia
+
+predict(model,newdata=data.frame(Height=87),interval = "predict")
+```
+Średnica drzewa o wysokości 87 cali równa: 16.06161 
+
+-- MURAT
+```{r}
+summary(lm(trees$Girth~trees$Height))
+```
+Otrzymujemy następujący model
+średnia = -6.18839 + 0.25575*wysokość
+Ponadto widzimy ze wartosc p w przedstawionym tescie na wpolczynnik regresji z hipoteza
+еф
+Model wyjasnia okolo 27 procednt zmiennosci _____.
+
+```{r}
+plot(trees$Girth, trees$Height, main="Zależność między średnicą a wysokością drzewa",
+     xlab="Średnica drzewa (cale)", ylab="Wysokość drzewa (stopy)", pch=19)
+abline(lm(Height ~ Girth, data = trees), col="blue")
+
+plot(trees$Girth, trees$Height, main="Zależność między średnicą a wysokością drzewa",
+     xlab="Średnica drzewa (cale)", ylab="Wysokość drzewa (stopy)", pch=19)
+abline(lm(Height ~Girth,data=trees),col='blue')
+
+lm(Height ~Girth,data=trees)
+lm(Girth ~Height,data=trees)
+```
+

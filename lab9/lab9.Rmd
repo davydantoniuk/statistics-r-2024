@@ -1,0 +1,117 @@
+---
+title: "lab9"
+author: "Antoniuk Davyd"
+date: "2024-05-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+$H_0: fp=fn$
+fp=frakcja osób ze zmarszkami wokól oczy w grupie palących
+fn=frakcja osób ze zmarszkami wokól oczy w grupie niepalących
+
+$H_1: fp>fn$, $(fp-fn>0)$
+
+ZADANIE 9.1
+```{r}
+n_p <- 150
+n_np <- 250
+k_p <- 95
+k_np <- 105
+f_p <- k_p/n_p #frakcja osób za zmarszczkami w grupie palących
+f_np <- k_np/n_np #frakcja osób za zmarszczkami w grupie niepalących
+#estymatory punktowe frakcji
+p_hat <- (k_p + k_np)/(n_p + n_np) #łączną frakcją w połączonych próbach
+```
+
+Korzystając z odpowiedniego wzoru obliczylem statystykę testową.
+```{r}
+Z <- (f_p - f_np)/sqrt(p_hat*(1 - p_hat) * (1/n_p + 1/n_np))
+```
+
+Wartość statystyki $Z$: `r Z`.
+
+```{r}
+a <- 1 - 0.95 #poziom istotności
+```
+
+```{r}
+qnorm(1-a)
+```
+![](zad1.png)
+
+Obszar krytyczny $(f_p \neq f_{np})$: $[1.644854, \infty)$.
+
+$Z \in [1.644854, \infty)$, a więc odrzucamy hipoteze $H_0:f_n=f_{np}$. Stąd można przypuszczać, że frakcja osób, które mają zmarszczki obok oczu, wśród palących jest większa niż wśród niepalących. 
+Na podstawie otrzymanych danych i przeprowadzonego testu można stwierdzić, że palenie tytoniu powoduje zmarszczki obok oczu.
+
+ZADANIE 9.2
+```{r}
+dane1 <- openxlsx::read.xlsx("hot_dog.xlsx")
+```
+
+```{r}
+x <- dane1$wołowe
+y <- na.omit(dane1$drobiowe)
+a1 <- 0.01
+n1 <- length(x)
+n2 <- length(y)
+x_bar <- mean(x)
+y_bar <- mean(y)
+s12 <- var(x)
+s22 <- var(y)
+n1
+n2
+```
+
+Dla przeprowadzenia testu dwóch średnich najpierw musimy przeprowadzić test dla dwóch wariancji dla zweryfikowania czy wariancję tych populacji są równe.
+
+$$H_0:\sigma_1^2=\sigma_2^2 \\H_1:\sigma_1^2\neq\sigma_2^2$$
+
+```{r}
+F_stat <- s12/s22
+F_stat
+```
+
+```{r}
+qf(a1/2, n1-1, n2-1)
+qf(1 - a1/2, n1-1, n2-1)
+```
+
+```{r}
+p = 2 * min(1-pf(F_stat, n1-1, n2-1), pf(F_stat, n1-1, n2-1))
+```
+
+$$H_0:\mu_1=\mu_2 \\H_1:\mu_1>\mu_2$$
+$$H_0:\mu_1=\mu_2$$
+
+```{r}
+Sp <- sqrt((s12*(n1 - 1) + s22*(n2 - 1))/(n1 + n2 - 2))
+Sp
+```
+
+```{r}
+T_stat <- (x_bar - y_bar)/(Sp * sqrt(1/n1 + 1/n2))
+T_stat
+```
+
+```{r}
+qt(1-a, n1 + n2 - 2)
+```
+
+Statystyka $T \in [ф1.689572, \infty)$. Odrzucamy $H_0$. Średnia zawartość kalorri w wowołych jest większa.
+
+-------------------------------------------------------------------------------------------------------------------
+
+
+$\mu1-$średnia wartość kalorii zawartych w wolowych
+$\mu2-$średnia wartość kalorii zawartych w drobiowych
+
+Postawiliśmy hipoteze zerową, zatem przechodzimy do hipotezy alternatywnej.
+$$H_1:\mu_1>\mu_2$$
+Postawiliśmy taką hipoteze alternatywną, ponieważ wcześniej dokonałiśmy analizy za pomocą przedzialu ufności.
+
+Więc na tej podstawie możemy napisać hipotezę że średnia zawartość kalorii wołowych jest większa niż drobiowych.

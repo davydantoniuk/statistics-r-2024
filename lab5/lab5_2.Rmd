@@ -1,0 +1,75 @@
+---
+title: "Untitled"
+author: "Antoniuk Davyd"
+date: "2024-03-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(MASS)
+library(fitdistrplus)
+data("groundbeef")
+mydata <- groundbeef$serving
+```
+
+```{r}
+fitdistr(mydata,"normal")
+#Bardzo maly bląd parametrow
+#srednia aretm 
+#odchyl standart z proby - bardzo duży rozżut (wielkosc pasztetikow nie ma rozkladu normalnego)
+```
+
+```{r}
+fitdistr(mydata,"exponential")
+#Bardzo maly bląd
+```
+
+```{r}
+fitdistr(mydata,"gamma")
+#Bled w cale sa nie duze 
+#shape - nie zamaly nie zaduzy
+```
+
+```{r}
+fitdistr(mydata,"gamma",lower=c(0,0))
+```
+
+```{r}
+fitdistr(mydata,"Weibull",lower=c(0,0))
+```
+
+```{r}
+fitdist(mydata,"norm",method="mme")
+#TO SAMO
+```
+
+```{r}
+fit_n <- fitdist(mydata,"norm")
+fit_e <- fitdist(mydata,"exp")
+fit_g <- fitdist(mydata,"gamma")
+summary(fit_n)
+```
+
+```{r}
+plot.legend <- c("normalny","wykładniczy","gamma","Weibulla")
+denscomp(list(fit_n,fit_e,fit_g,fit_w),
+         fitlty=1,fitlwd = 2,fitcol = c(2,4,6,3),
+         legendtext = plot.legend,
+         main="gęstości dopasowanych rozkładów")
+lines(density(mydata),lwd=2)
+
+```
+
+```{r}
+library(actuar)
+fit_P <- fitdist(mydata,"pareto",start=list(shape=1,scale=500))
+summary(fit_P)
+
+fit_B <- fitdist(mydata,"Burr",start=list(shape=1,scale=500))
+summary(fit_B)
+```
+

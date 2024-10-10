@@ -1,0 +1,172 @@
+---
+title: "Kolokwium.Statystyka"
+author: "Antoniuk Davyd"
+date: "2024-06-12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message=FALSE, warning=FALSE}
+library(stats)
+library(ggplot2)
+```
+##Zadanie 1
+```{r}
+gleba <- read.table("gleba.csv",sep = ",", header = TRUE)
+colSums(is.na(gleba))
+head(gleba)
+```
+
+###(A)
+
+```{r}
+ggplot(gleba, aes(x = factor(1), y = copper)) + 
+  geom_boxplot() + 
+  labs(title = "Stężenie Miedzi w Glebie", x = "Miedź", y = "Stężenie")
+```
+
+
+Mediana: Wartość mediany stężenia miedzi znajduje się w okolicach 40 jednostek.
+Wartości odstające: Istnieje kilka wartości odstających, które wskazują na wyjątkowo wysokie stężenia miedzi w niektórych próbkach gleby, przekraczające 100 jednostek.
+
+
+```{r}
+ggplot(gleba, aes(x = factor(1), y = zinc)) + 
+  geom_boxplot() + 
+  labs(title = "Stężenie Cynku w Glebie", x = "Cynk", y = "Stężenie",color="lightpink")
+```
+
+Mediana: Wartość mediany stężenia cynku w glebie znajduje się w mniej 500 jednostek.
+Wartości odstające: Istnieje kilka wartości odstających, które wskazują na wyjątkowo wysokie Stężenie Cynku w Glebie w niektórych próbkach gleby, przekraczające 1500 jednostek.
+
+###(B)
+
+```{r}
+alpha <- 0.04
+```
+
+-TEST NA RÓWNOŚĆ WARIANCJI
+$H_0:$ Wariancje rozkładów stężenie miedzi i stężeniu cynku są takie same.
+$H_1:$ Wariancje rozkładów stężenie miedzi i stężeniu cynku są różne.
+
+```{r}
+var.test(gleba$copper, gleba$zinc)
+```
+
+Otrzymana p-wartość jest mniejszą niż 0.05 więc odrzucamy hipotezę zerową na korzyść hipotezy
+alternatywnej.
+
+-TEST NA RÓWNOŚĆ ŚREDNICH
+$H_0:$ Rozkłady średnich stężenie miedzi w badanej glebie i stężenia cynku są równe.
+$H_1:$ Rozkład średniej stężenie miedzi w badanej glebie jest większy niż rozkład średniej stężenia cynku.
+
+```{r}
+t.test(gleba$copper, gleba$zinc,conf.level=0.96)
+```
+
+Otrzymana p-wartość jest mniejszą niż 0.04 więc odrzucamy hipotezę zerową na korzyść hipotezy
+alternatywnej. 
+###(C)
+
+$H_0:$ Stężenie miedzi i cynku nie są skorelowane.
+$H_1:$ Stężenie miedzi i cynku są skorelowane.
+
+Estymator punktowy współczynnika korelacji liniowej Pearsona
+```{r}
+cor(gleba$copper, gleba$zinc,method = "pearson")
+```
+
+
+```{r}
+cor.test(gleba$copper, gleba$zinc, conf.level = 0.94) 
+```
+Otrzymana p-wartość jest mniejszą niż 0.06, więc odrzucamy hipotezę zerową na korzyść hipotezy alternatywnej.
+  
+##Zadanie 2
+
+```{r message=FALSE, warning=FALSE}
+library(MASS)
+```
+
+```{r}
+dane <- anorexia
+head(dane)
+```
+
+###(A)
+
+```{r}
+n <- 72
+```
+
+```{r}
+dane_cbt <- subset(anorexia, Treat == "CBT")
+
+dane_cbt_rozn <- dane_cbt$Postwt - dane_cbt$Prewt
+
+test <- t.test(dane_cbt_rozn)
+p_u <- test$conf.int[1:2]
+round(p_u,3)
+```
+
+Około 95 realizacji przedziału (0.227;5.787) na 100 zawiera szacowaną wartość średniej wagi przed i po terapii behawioralnej.
+
+
+###(B)
+
+$H_0:$ Średnia różnica wagi przed i po terapii behawioralnej wynosi zero
+$H_1:$ Średnia różnica wagi przed i po terapii behawioralnej jest rózna od 0
+
+```{r}
+t.test(dane_cbt_rozn, alternative = "two.sided")
+```
+
+Otrzymana p-wartość jest mniejszą niż 0.05 więc odrzucamy hipotezę zerową na korzyść hipotezy
+alternatywnej.
+  
+## Zadanie 3
+  
+```{r}
+n <- 80
+czerwone <- 35
+biale <- 31
+rozowe <- 14
+
+w <- c(czerwone, biale, rozowe)
+stos <- c(3, 2, 2)
+wszystkie_obserwacje <- n
+```
+
+$H_0:$ Stosunek róż czerwonych do białych i różowych wynosi 3:2:2
+$H_1:$ Stosunek róż czerwonych do białych i różowych jest inny, niż 3:2:2
+
+```{r}
+ocz <- wszystkie_obserwacje*stos/sum(stos)
+ocz
+```
+```{r}
+p <- ocz/sum(ocz)
+sum(p)
+```
+```{r}
+chisq.test(x = w, p = p)
+```
+
+Otrzymana p-wartość jest mniejszą niż 0.05 więc odrzucamy hipotezę zerową na korzyść hipotezy
+alternatywnej. 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  

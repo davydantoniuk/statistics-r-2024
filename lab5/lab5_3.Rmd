@@ -1,0 +1,62 @@
+---
+title: "lab5"
+author: "Antoniuk Davyd"
+date: "2024-03-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message=FALSE, warning=FALSE}
+library(actuar)
+library(MASS)
+library(fitdistrplus)
+library(stats)
+```
+
+```{r}
+data(fremale)
+AgeIn <- fremale$AgeIn
+AgeOut <- fremale$AgeOut
+```
+
+```{r}
+fitt_n <- fitdistr(AgeIn,"normal")
+fitt_n
+
+AgeIn_int <- round(AgeIn)
+fitt_p <- fitdistr(AgeIn_int,"poisson")
+fitt_p
+
+fitt_w <- fitdistr(AgeIn,"weibull")
+fitt_w
+
+fitt_e <- fitdistr(AgeIn,"exponential")
+fitt_e
+
+fitt_g <- fitdistr(AgeIn,"gamma")
+fitt_g
+```
+
+
+```{r}
+fittt_n <- fitdist(AgeIn,"norm")
+fittt_p <- fitdist(AgeIn_int,"pois")
+fittt_w <- fitdist(AgeIn,"weibull")
+fittt_e <- fitdist(AgeIn,"exp")
+fittt_g <- fitdist(AgeIn,"gamma")
+```
+
+```{r}
+plot.legend2 <- c("normalny","Weibulla","wykładniczy","gamma")
+denscomp(list(fittt_n,fittt_w,fittt_e,fittt_g),
+         fitlty=1,fitlwd = 2,fitcol = c(2,4,6,3,7),
+         legendtext = plot.legend2,
+         main="gęstości dopasowanych rozkładów")
+lines(density(AgeIn),lwd=2)
+```
+
+
+

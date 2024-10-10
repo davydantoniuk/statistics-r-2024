@@ -1,0 +1,68 @@
+---
+title: "Lab10"
+author: "Roman Larkin"
+date: "2024-05-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Przykład
+
+```{r}
+obs0 <- data.frame(usterki = c(0, 1, 2, 3), obwody = c(31, 15, 9, 4))
+n <- sum(obs0$obwody)
+lambda <- round(sum(obs0$usterki*obs0$obwody)/n, 1)
+obs <- data.frame(usterki = c(0, 1, 2), obwody = c(31, 15, 13))
+pr <- c(dpois(c(0,1), lambda),
+        1-sum(dpois(c(0,1), lambda)))
+wart.p <- chisq.test(x=obs$obwody,p=pr)$p.value
+```
+
+## Zadanie 1
+
+Hipoteza zerowa: Rozkład kalorii w hot-dogach drobiowych jest normalny.
+
+Hipoteza alternatywna: Rozkład kalorii w hot-dogach drobiowych nie jest normalny.
+
+```{r}
+dane1 <- openxlsx::read.xlsx("hot_dog.xlsx")
+a <- 0.05
+h.w <- dane1$wołowe
+h.d <- na.omit(dane1$drobiowe)
+
+qqnorm(h.w, col = 'red', main = 'Wykres kwantylowy dla hot-dogów wołowych', 
+       xlab = 'Kwantyle teorytyczne', ylab = 'Kwantyle przykładowe')
+qqline(h.w, col = 'blue')
+
+
+qqnorm(h.d, col = 'red', main = 'Wykres kwantylowy dla hot-dogów drobiowych', 
+       xlab = 'Kwantyle teorytyczne', ylab = 'Kwantyle przykładowe')
+qqline(h.d, col = 'blue')
+
+```
+
+Na podstawie otrzymanych wykresów kwantylowych nie jesteśmy w stanie jednoznacznie stwierdzić czy liczba kalorii w rozważanych hot-dogah ma rozkład normalny, ponieważ punkty wykresu nieregularnie rozłożone są wokół linii referencyjnej w jej środkowej części.
+
+```{r}
+ks.test(h.w, h.d)
+```
+
+Na podstawie testu Kołmogorowa-Smirnowa dla dokładnie dwóch prób możemy zrobić następujące wnioski: Ponieważ wartość p, która wynosi (0.00145) jest mniejsze od poziomu istotności (0.05), odrzucamy hipotezę zerową. Oznacza to, że istnieje istotna różnica między rozkładami kalorii w hot-dogach drobiowych i wołowych.Maksymalna różnica między skumulowanymi rozkładami empirycznymi obu próbek wynosi 0.58235
+
+
+```{r}
+nortest::lillie.test(h.d) #Lillieforsa
+nortest::lillie.test(h.w)
+```
+
+```{r}
+nortest::ad.test(h.d) #Andersona-Darlinga
+nortest::ad.test(h.w)
+```
+```{r}
+nortest::cvm.test(h.d) #Cramera von Misesa
+nortest::cvm.test(h.w)
+```

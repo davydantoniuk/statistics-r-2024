@@ -1,0 +1,290 @@
+---
+title: "Lab11"
+author: "Davyd Antoniuk"
+date: "2024-05-20"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message=FALSE, warning=FALSE}
+library(MASS)
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(knitr)
+library(moments)
+library(psych)
+library(nortest)
+```
+
+## Zadanie 1
+
+Fabryka samochodów do pomalowania karoserii używa czterech kolorów: żółty, czerwony,
+czarny i biały. Chcemy stwierdzić, czy kolory te są jednakowo popularne wśród kupujących. W tym celu
+zapytano potencjalnych klientów jaki kolor karoserii wybraliby kupując samochód i uzyskano następujące
+odpowiedzi
+91 zakupiłoby samochód w kolorze czarnym, 26 – żółtym, 41 – czerwonym i 42 – białym.
+Na podstawie otrzymanej próby zweryfikuj hipotezę o tym, że
+(A) wszystkie cztery kolory są jednakowo popularne.
+(B) kolory czerwony, żółty i biały są tak samo popularne, a kolor czarny jest „dwa razy bardziej popularny”.
+
+```{r}
+dane <- data.frame(kolor = c('czarny (1)', 'żółty (2)', 'czrewony (3)', 'biały (4)'), zaobserwowane = c(91, 26, 41, 42))
+```
+
+```{r}
+zaobserwowane <-  c(91, 26, 41, 42)
+```
+
+### (A)
+
+Musimy zbadać czy karoseria ma rozkład jednostajny dyskretny z prawdopodobieństwem $\frac{1}{4}$.
+
+$H_0:$ Rozkład popularności kolorów jest rozkładem równomiernym z parametrem 1/4.
+
+Rodzaj hipotezy: nieparametryczna, prosta, bo mamy parametry jednoznaczowe.
+
+$H_1:$Rozkład popularności kolorów jest inny niż równomierny z parametrem 1/4.
+
+```{r}
+oczekiwane1 <- c(50,50,50,50)
+chisq.test(dane$zaobserwowane,p=oczekiwane1/sum(zaobserwowane))
+#chisq.test(dane2$zaobserwowane,p=c(1/4,1/4,1/4,1/4)) #drugi argument - prawdopod . teoretyczne(musi w sumie dawać 0)
+```
+Przeprowadzilem test zgodności chi-kwadrat zaproponowany przez Karla Pearsona.
+Otrzymłem p-wartość równa 2.088e-10. Jest ona mniejsza od pięciu setnych(0.05), więc rzucamy $H_0$, na korzyść hipotezy alternatywnej. Na podstawie otrzymanego testu możemy twierdzić że te cztery kolory nie są jednakowo popularne.
+
+### (B)
+Zdefiniujemy rozklad dyskretny za pomocą, funkcji prawdopodobieństwa 
+
+$P[X=czarny]=2/5$
+$P[X=żółty]=1/5 \ P[X=czerwony]=1/5 \ P[X=biały]=1/5$
+$H_0:$ Rozkład kolorów karoserii jest zdefiniowany poniższą funkcją prawdopodobieństwa
+
+$H_1:$ Rozkład kolorów karoserii jest rozkładem dany funkcją prawdopodobieństwa inną niż powyższa
+
+```{r}
+oczekiwane2 <- c(80,40,40,40)
+chisq.test(dane$zaobserwowane,p= oczekiwane2/sum(zaobserwowane))
+```
+
+Przeprowadzilem test zgodności chi-kwadrat zaproponowany przez Karla Pearsona.
+Otrzymłem p-wartość równa 0.0882.Otrzymana p-wartość jest większa niż pięć setnych(0.05) więc nie mamy podstaw do odrzucenia hipotezy zerowej.
+Na podstawie otrzymanego testu możemy twierdzić że kolor czarny ma szanse być dwa razy bardziej popularny niż inne kolory.
+
+
+##Zadanie 2
+W zbiór birthwt biblioteki MASS zawiera czynniki ryzyka związane z niską masą
+urodzeniową noworodka. Dane zostały zebrane w Baystate Medical Center, Springfield, Massachusetts w
+roku 1986. Głównym celem analizy jest zbadać czy palenie papierosów przez matkę w czasie ciąży wpływa na
+masę urodzeniową dziecka. W tym celu wykonaj poniższe polecenia i odpowiedz na poniższe pytania. Przed
+przystąpieniem do analizy zapoznaj się z opisem zbioru birthwt w oknie Help RStudio.
+(A) Naszkicuj histogramy i wykresy pudełkowe wagi noworodka, w obu przypadka, tj. dla matki palącej i
+dla matki nie palącej.
+(B) Na podstawie danych wyznacz skośność i kurtozę rozkładów wagi noworodka oddzielnie dla matek
+palących i oddzielnie dla niepalących.
+(C) Czy na podstawie analizy przeprowadzonej w punktach (A) i (B) można twierdzić, że rozkład wagi
+noworodka w rozważanych grupach jest normalny?
+(D) Zweryfikuj swoją odpowiedź z punktu (C) przeprowadzając odpowiedni test statystyczny.
+(E) Na poziomie istotności 0.01 zweryfikuj hipotezę, że średnia waga noworodka matki palącej jest mniejsza
+niż matki niepalącej.
+<\br>
+<\br>
+<\br>
+
+Niech 
+$\mu_p$ - średnia waga  noworodka matki palącej
+$\mu_n$ - średnia waga  noworodka matki niepalącej
+
+$H0:$ $\mu_p$ =$\mu_n$
+$H1:$ $\mu_p$<$\mu_n$
+Rozkłady wagi noworodków jest rozkładem normalnym
+```{r}
+dane2 <- MASS::birthwt
+head(dane2)
+```
+
+###(A)
+```{r}
+daneA <- data.frame(palenie=dane2$smoke,waga=dane2$bwt)
+head(daneA)
+```
+
+```{r}
+niepalace <- daneA %>% filter(palenie==0)
+palace <- daneA %>% filter(palenie==1)
+
+par(mfrow=c(1,2))
+
+hist(niepalace$waga, main="Wagi noworodków matek niepalących", xlab="Waga", col="purple", border="black")
+
+hist(palace$waga, main="Wagi noworodków matek palących", xlab="Waga", col="darkblue", border="black")
+```
+```{r}
+par(mfrow=c(1,1))
+
+par(mfrow=c(1,2))
+
+boxplot(niepalace$waga, main="Waga noworodków matek niepalących", ylab="waga", col="purple" )
+
+boxplot(palace$waga, main="Waga noworodków matek palących", ylab="waga", col="darkblue" )
+
+par(mfrow = c(1, 1))
+```
+
+### (B)
+
+```{r}
+skosnosc <- round(c(skewness(niepalace$waga), skewness(palace$waga)),2)
+kurtoza <- round(c(kurtosis(niepalace$waga), kurtosis(palace$waga)),2)
+miary <- rbind.data.frame(skosnosc,kurtoza)
+colnames(miary) <- c("Niepalące", "Palące")
+rownames(miary) <- c("Skośność","Kurtoza")
+
+print(miary)
+```
+Dla matek niepalących rozkład wagi noworodka jest lewostronnie asymetryczny i platykurtyczny
+
+Dla matek palących rozkład wagi noworodka jest lewostronnie asymetryczny i mezokurtyczny
+
+### (C)
+
+Na podstawie otrzymanej skośności i kurtozy można przypuszczać, że rozkłady wagi noworodków w obu przypadkach są normalne.
+
+### (D)
+
+$H_0:$ Rozkład wagi noworodka matki niepalącej jest rozkładem normalnym
+$H_1:$ Rozkład wagi noworodka matki niepalącej jest rozkładem innym niż rozkład normalny.
+
+```{r}
+ad.test(niepalace$waga) #Andersona-Darlinga
+```
+
+```{r}
+shapiro.test(niepalace$waga) #Shapiro-Wilka
+```
+
+```{r}
+fBasics::dagoTest(niepalace$waga)# test D’Agostino
+```
+
+Na podtawie przeprowadzonych testów: Andersona-Darlinga; Shapiro-Wilka; D’Agostino
+W grupie matek niepalących Wartości p w przeprowadzonych testach są większe od 0.05, zatem nie mamy podstaw do odrzucenia hipotezy zerowej.
+Na podstawie otrzymanych testów możemy twierdzić że rozkład wagi noworodka matki niepalącej jest rozkładem normalnym
+
+$H_0:$ Rozkład wagi noworodka matki palącej jest rozkładem normalnym
+
+$H_1:$ Rozkład wagi noworodka matki palącej jest rozkładem innym niż rozkład normalny.
+
+```{r}
+ad.test(palace$waga) #Andersona-Darlinga
+```
+
+```{r}
+shapiro.test(palace$waga) #Shapiro-Wilka
+```
+
+```{r}
+fBasics::dagoTest(palace$waga)# test D’Agostino
+```
+
+Na podtawie przeprowadzonych testów: Andersona-Darlinga; Shapiro-Wilka; D’Agostino
+W grupie matek palących Wartości p są większe od 0.05, zatem nie mamy podstaw do odrzucenia hipotezy zerowej.
+Na podstawie otrzymanych testów możemy twierdzić że rozkład wagi noworodka matki palącej jest rozkładem normalnym
+
+Na podstawie przeprowadzonych testów można przypuszcza, że rozważane dane w obu grupach pochodzą z rozkładu normalnego.
+
+### (E)
+
+W tym przypadku przeprowadzamy test na równość średnich dwóch populacji Jest to przypadek drugi (dwie niezależn próby o różnej liczebności), dlatego najpierw należy zrobić test na równość wariancji dwóch populacji
+
+$\mu_p$ - średnia waga  noworodka matki palącej
+$\mu_n$ - średnia waga  noworodka matki niepalącej
+
+-TEST NA RÓWNOŚĆ WARIANCJI
+
+$H_0:$ Wariancje rozkładów wagi noworodków w obu grupach są takie same $H_0:\sigma_1^2=\sigma_2^2$
+
+$H_1:$ Wariancje rozkładów wagi noworodków są różne w obu grupach. $$H_1:\sigma_1^2\neq\sigma_2^2$$
+
+```{r}
+a = 0.01
+```
+
+```{r}
+n1 <- length(palace$waga)
+n2 <- length(niepalace$waga)
+n1
+n2
+```
+
+```{r}
+S1 <- ((n1-1)/n1)*var(palace$waga)
+S2 <- ((n2-1)/n2)*var(niepalace$waga)     #uwaga! to ma być obciążony estymator dlatego domnażamy przez (n-1)/n. Samo var() oblicza nieobciążony estymtor wariancji. 
+# uwaga 2 są to s1^2 i s2^2 dlatego w późniejszych wzorach nie podnosimy do kwadratu
+
+Fs <- S1/S2
+Fs
+```
+
+```{r}
+qf(0.01/2, n1-1, n2-2)
+```
+
+```{r}
+qf((1-0.01/2), n1-1, n2-2)
+```
+Obszar krytyczny to: 
+$$[0;0.5676319]\cup[1.712512;\infty]$$
+
+```{r}
+#var.test(dane$bwt[dane$smoke == 0], dane$bwt[dane$smoke == 1]) #test variancji
+#var.test(palace$waga,niepalace$waga) #test variancji
+```
+
+
+Wartość statystyki testowej F nie zawiera się w obszarze krytycznym, zatem nie ma podstaw do odrzucenia hipotezy zerowej (zakładającej równość wariancji)Więc na podstawie tego możemy twierdzić że wariancje rozkladów w obu grupach są równe.
+
+-TEST NA RÓWNOŚĆ ŚREDNICH
+
+$H0:$ $\mu_p$ =$\mu_n$
+$H1:$ $\mu_p$<$\mu_n$
+
+$\mu_p$ - średnia waga  noworodka matki palącej
+$\mu_n$ - średnia waga  noworodka matki niepalącej
+
+```{r}
+p_s <- mean(palace$waga)
+n_s <- mean(niepalace$waga)
+p_s
+n_s
+```
+
+```{r}
+Sp2 <- (((S1)*(n1-1))+((S2)*(n2-1)))/(n1+n2-2)
+Sp <- sqrt(Sp2)
+Sp
+```
+
+```{r}
+Ts <- (p_s-n_s)/(Sp*(sqrt(1/n1+ 1/n2)))
+Ts
+```
+
+```{r}
+qnorm(1-0.01, n1+n2-2)
+```
+Obszar krytyczny:
+$$(-\infty;189.3263)$$
+
+Wartość statystyki testowej zawiera się w obszarze krytycznym, dlatego odrzucamy hipotezę zerową.
+
+Na podstawie danych oraz przeprowadzonych testów możmy twierdzić, że średnia waga noworodków matek palących jest mniejsza od średniej wagi noworodków matek niepalących.
+
+```{r}
+# t.test(dane$bwt[dane$smoke == 0], dane$bwt[dane$smoke == 1], var.equal = TRUE)
+```
+

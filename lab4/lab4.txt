@@ -1,0 +1,4 @@
+# par(mfrow=c(1,2))
+# curve(dexp(x, 2), from = 0, to = 5, col = "red", main = "Rozkładu wykładniczy", ylab = "Gęstość prawdopodobieństwa")
+# curve(dweibull(x, 1, 0.5), from = 0, to = 5, col = "red", main = "Rozkład Weibulla", ylab = "Gęstość prawdopodobieństwa")
+# par(mfrow=c(1,1))

@@ -1,0 +1,137 @@
+---
+title: "lab6"
+author: "Antoniuk Davyd"
+date: "2024-04-10"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message=FALSE, warning=FALSE}
+library(actuar)
+library(MASS)
+library(fitdistrplus)
+library(stats)
+```
+
+**ZADANIE 6.1**
+W zakładzie uboju drobiu wybrano losowo 20 kurczaków i otrzymano średnią wagę kurczaka
+2.44 kg oraz nieobciążone odchylenie standardowe równe 0.28 kg.
+
+(A) Przyjmując, że waga kurczaków ma rozkład normalny wyznaczyć przedział ufności dla średniej wagi
+kurczaka na poziomie ufności 0.95. Jak zmieni się przedział, jeśli przyjmiemy poziom ufności 0.99?
+
+(B) Załóżmy, że zważano 1000 kurczaków i otrzymano taką samą średnią i takie samo odchylenie standardowe.
+Czy otrzymany w tym przypadku przedział ufności dla średniej wagi zwiększy się czy zmniejszy? Rozważ
+dwa przypadki przyjmując poziomu ufności 0.95 i 0.99. Odpowiedź uzasadnij.
+```{r}
+#A
+n <- 20
+x.bar <- 2.44
+s.daszek <- 0.28
+alfa1 <- 1-0.95
+alfa2 <- 1-0.99
+
+t.alfa1 <- qt(1-alfa1/2,n-1)
+lewy.kon1 <- round(x.bar-t.alfa1*(s.daszek/sqrt(n)),4)
+prawy.kon1 <- round(x.bar+t.alfa1*(s.daszek/sqrt(n)),4)
+cat("95-ciu PROCENTOWYM PRZEDZIALEM UFNOŚĆI ŚREDNIEJ WAGI KURCZAKA JEST PRZEDZIAL O KOŃCACH: (",lewy.kon1,";",prawy.kon1,")","\n")
+#NA POZIOMIE ?ISTOTNOŚCI?(ufności) 0.95: PRZEDZIA (---) POKRYWA/ZAWIERA NIEZNANĄ ŚREDNIĄ WAGĘ KURCZAKA
+#95% PROCENTOWYM PRZEDZIALEM UFNOŚĆI ŚREDNIEJ WAGI KURCZAKA JEST PRZEDZIAL O KOŃCACH ()
+t.alfa2 <- qt(1-alfa2/2,n-1)
+lewy.kon2 <- round(x.bar-t.alfa2*(s.daszek/sqrt(n)),4)
+prawy.kon2 <- round(x.bar+t.alfa2*(s.daszek/sqrt(n)),4)
+cat("99-ciu PROCENTOWYM PRZEDZIALEM UFNOŚĆI ŚREDNIEJ WAGI KURCZAKA JEST PRZEDZIAL O KOŃCACH: (",lewy.kon2,";",prawy.kon2,")","\n")
+```
+Wraz ze wzrostem poziomu ufności rośnie długość przedziału ufności
+(Wraz ze zmniejszeniem poziomu istotności rośnie długość przedzialu ufności)
+```{r}
+#B
+n_nowe <- 1000
+x.bar <- 2.44
+s.daszek <- 0.28
+alfa1 <- 1-0.95
+alfa2 <- 1-0.99
+
+u.alfa1 <- qnorm(1-alfa1/2)
+lewy.kon1 <- round(x.bar-u.alfa1*(s.daszek/sqrt(n_nowe)),4)
+prawy.kon1 <- round(x.bar+u.alfa1*(s.daszek/sqrt(n_nowe)),4)
+cat("Przedział ufności dla średniej wagi kurczaka na poziomie ufności 0.95 z próbą 1000-elementową: (",lewy.kon1,";",prawy.kon1,")","\n")
+
+u.alfa2 <- qnorm(1-alfa2/2)
+lewy.kon2 <- round(x.bar-u.alfa2*(s.daszek/sqrt(n_nowe)),4)
+prawy.kon2 <- round(x.bar+u.alfa2*(s.daszek/sqrt(n_nowe)),4)
+cat("Przedział ufności dla średniej wagi kurczaka na poziomie ufności 0.99 z próbą 1000-elementową: (",lewy.kon2,";",prawy.kon2,")","\n")
+```
+Przy zwiększeniu liczby kurczaków do 1000, przedział ufności dla średniej wagi kurczaka zmniejszy się zarówno dla poziomu ufności 0.95, jak i 0.99. Jest to zgodne z tym, że im większy rozmiar próby, tym samym mniejszy jest przedział ufności.
+
+**ZADANIE 6.2**
+Pewna firma prowadząca badania rynkowe chce oszacować udział przedsiębiorców zagranicznych w amerykańskim rynku pewnego produktu. W tym celu pobrano próbę 100 konsumentów i stwierdzono, że 34 osoby w próbie kupują produkt wyprodukowany za granicą.
+(A) Wyznacz 95% przedział ufności dla udziału produktu zagranicznego w rynku amerykańskim.
+(B) Załóżmy, że rozważana firma nie jest zadowolona z rozpiętości otrzymanego przedziału twierdząc, że jest
+ona zbyt duża. Czy zwiększenie liczebności próby pozwoli na zmniejszenie długości przedziału? Jeśli tak, to
+wyznacz przedział ufności udziału produktu zagranicznego w amerykańskim rynku zakładając, że dysponujemy
+próbą 400-elementową i na podstawie tej próby otrzymujemy ten sam wynik, tj. udział konsumentów, którzy
+kupują produkty wyprodukowane za granicą pozostaje taki sam w tej 400-elementowej próbie jak w próbie
+100-elementowej.
+(C) Jednakże firma stwierdziła, że nie jest w stanie znaleźć 400 konsumentów, których można poddać badaniu
+statystycznemu. Czy w tym przypadku można zmniejszyć wielkość próby wymaganą do oszacowania udziału
+produktu zagranicznego w amerykańskim rynku?
+(D) Zaproponuj inne działania, które zmniejszą rozpiętość przedziału ufności udziału produktu zagranicznego
+w amerykańskim rynku i wyznacz ten krótszy przedział. Rozważana firma nie zaakceptowała nowego
+przedziału ufności. Wyjaśnij dlaczego?
+```{r}
+#A
+#Przedział ufności dla frakcji
+n <- 100
+k <- 34
+alfa <- 1 - 0.95
+u.alfa <- qnorm(1-alfa/2)
+lewy.koniec <- round((k/n)-u.alfa*sqrt((k*(1-k/n))/(n*n)),4)
+prawy.koniec <- round((k/n)+u.alfa*sqrt((k*(1-k/n))/(n*n)),4)
+rozpiencie <- prawy.koniec - lewy.koniec
+cat("Przedział ufności  dla udziału produktu zagranicznego w rynku amerykańskim na poziomie ufności 0.95 z próbą 100-elementową: (",lewy.koniec,";",prawy.koniec,")","\n","Rozpięcie: ",rozpiencie,"\n")
+```
+
+```{r}
+#B
+n_new <- 400
+k <- 34*4 #ponieważ liczebność próby wzrosla w 4 razy
+alfa <- 1 - 0.95
+u.alfa <- qnorm(1-alfa/2)
+lewy.koniec <- round((k/n_new)-u.alfa*sqrt((k*(1-k/n_new))/(n_new*n_new)),4)
+prawy.koniec <- round((k/n_new)+u.alfa*sqrt((k*(1-k/n_new))/(n_new*n_new)),4)
+rozpiencie <- prawy.koniec - lewy.koniec
+cat("Przedział ufności  dla udziału produktu zagranicznego w rynku amerykańskim na poziomie ufności 0.95 z próbą 400-elementową: (",lewy.koniec,";",prawy.koniec,")","\n","Rozpięcie: ",rozpiencie,"\n")
+```
+
+```{r}
+#C
+m <- 400
+k <- 34*4
+d <-  0.047 # maksymalny błąd szacunku
+alfa <- 1 - 0.95
+u.alfa <- qnorm(1-alfa/2)
+n_min <- ceiling(((u.alfa/d)^2)*k*(1-k/m)/m)
+n_min
+```
+**Zadanuie 6.3**
+Badano celność strzelania do celu policjantów pewnego komisariatu. Na 450 oddanych
+strzałów wyliczano s^2 = 15. Znajdź przedział ufności dla wariancji na poziomie ufności 0.98.
+```{r}
+n <- 450 #duża próba
+s2 <- 16 #wariancja
+alfa <- 1 - 0.98
+u.alfa <- round(qnorm(1-alfa/2),3)
+lewy.koniec <- round(s2/((1+(u.alfa/sqrt(2*n)))^2),3)
+prawy.koniec <- round(s2/((1-(u.alfa/sqrt(2*n)))^2),3)
+rozpiencie <- prawy.koniec - lewy.koniec
+cat("98% przedziałem ufności dla wariancji jest przedzial (",lewy.koniec,";",prawy.koniec,")","\n","Rozpięcie: ",rozpiencie,"\n")
+##NA POZIOMIE ?ISTOTNOŚCI?(ufności) 0.95: PRZEDZIA --- POKRYWA/ZAWIERA WARIANCJĘ CELNOŚCI STRZELANIA
+```
+
+
+
+

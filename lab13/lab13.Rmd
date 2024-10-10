@@ -1,0 +1,140 @@
+---
+title: "lab13"
+author: "Antoniuk Davyd"
+date: "2024-06-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r message=FALSE, warning=FALSE}
+library(readxl)
+library(stats)
+library(psych)
+library(DescTools)
+library(ggplot2)
+```
+
+##ZADANIE 13.2
+
+```{r}
+dane <- read_excel("oceny.xlsx")
+dane <- na.omit(dane)
+dane
+```
+
+##A
+
+```{r}
+n <- 100
+a <- 0.02
+rachun <- dane$rachunek
+stat <- dane$statystyka
+```
+
+```{r}
+r_xy <- cor(rachun, stat, method = "pearson")
+q <- qnorm(1-a/2)
+
+c_i_l <- (r_xy - q*(1-(r_xy)^2)/(sqrt(n)))
+c_i_r <- (r_xy + q*(1-(r_xy)^2)/(sqrt(n)))
+```
+
+```{r}
+paste("(", round(c_i_l, 2), ",", round(c_i_r, 2), ")")
+```
+
+Predzial zawiera 0, więc wspołczynnik korelacji ρ
+może być równy 0. Możemy przypuszczać, że zmienne “rachunek” i “statystyka” są nieskorelowane.
+
+##B
+$H_0: p=0$
+$H_0: p\neq0$
+```{r}
+cor.test(rachun, stat, conf.level = 0.98)
+```
+
+```{r}
+t <- (r_xy*sqrt(n-2))/(1-(r_xy)^2)
+qt <- qt(1-a/2, n-2)
+t
+```
+
+```{r}
+paste("(", -Inf, ",", -round(qt, 3), "]", "U", "[", round(qt, 3), ",", Inf, ")")
+```
+
+Statystyka testowa -1.5893396 nie zawiera się w obszarze krytycznym, więc nie mamy podstaw do odrzucenia hipotezy zerowej. Oceny z rachunku prawdopodobieństwa i statystyki nie są skorelowane.
+
+Nie mamy podstaw do odrz H_0 - korelacja - 0 -> nie sa skor.
+
+❗Przypuszczamy❗, że oceny z rachunku prawdopodobieństwa i statystyki nie są skorelowane
+
+##Zadanie 13.3
+```{r}
+dane2 <- read_excel("tlen.xlsx")
+dane2
+```
+
+```{r}
+T <- as.numeric(dane2$T)
+dane2$DO <- as.numeric(dane2$DO)
+```
+
+##(A)   
+```{r}
+ContCoef(dane2$T, dane2$DO) # współczynnik C Pearsona
+```
+Z tego można wywnioskować że istnije silna zależność między badanymi cechami.
+
+```{r}
+CramerV(dane2$T, dane2$DO) #Współczynnikiem kontyngencji V Cramera
+```
+```{r}
+TschuprowT(T,dane2$DO)
+```
+
+
+Obliczylem wspólczynnik kontyngencji V Cramera za pomocą funkcji "DescTools::CramerV" i otrzymałem wspólczynnik równy: 0.8940593. Z tego można wywnioskowac że między badanymi cechami istnieje silna wspólzależność krzywoliniowa.
+
+```{r}
+statyst_yulea <- chisq.test(T, dane2$DO)$statistic
+statyst_yulea <- as.numeric(statyst_yulea)
+statyst_yulea <- sqrt(statyst_yulea)
+wsp <- sqrt(statyst_yulea/length(T))
+wsp
+```
+
+```{r}
+# wsc <- round(DescTools::ContCoef(dane2$T,dane2$DO),4)
+# 
+# x <- as.numeric(chisq.test(T,dane2$DO)$statistic)
+# wfy <- round(sqrt(x/n),4)
+# 
+# wsp <- data.frame(nazwa=c('fi Yula'),wartosc=c(wfy))
+# 
+# knitr::kable(wsp)
+
+#0.8941
+#0.8524
+#0.9839
+#0.9067
+```
+
+
+##(B)
+$H_0: $temperatury wody i koncentracji tlenu w rzece Ijse nie są skorelowane
+$H_0: $temperatury wody i koncentracji tlenu w rzece Ijse są skorelowane
+
+```{r}
+cor.test(T, dane2$DO) #conf.level
+```
+
+Test przeprowadziłem wykorzystając z funkcji "cor.test()".Z wyniku tej funkcji otrzymałem wartość statystyki równą -7.5735,57 stopni swobody,ponieważ miałem 57 obserwacji,p wartość równą 3.522e-10.Otrzymana p-wartość jest mniejszą od pięciu setnych więc odrzucamy hipotezę zerową na korzyść hipotezy alternatywnej. Na podstawie tych danych możemy twierdzić że temperatury wody i koncentracji tlenu w rzece Ijse są skorelowane.
+
+##(C)
+ Na podstawie oblicznnych wspolczynnikow kontygwencji mozemy powiedzic ze istnieje silnia zaleznosc funkcyjna miedzy koncentracja tlenu a temperatury wody.Ponadto pzeprowadzony test na wspolczynnik korelacji wskazuje ze badane zmienne sa skorelowane.W przeprowadzonym testu, wspólczynnik korelacji otrzymaliśmy -0.708, który jest dość duży i ujemny, co wskazuje na to że ze wzrostem temperatury, zmniejsza się tlen.
+
+ 

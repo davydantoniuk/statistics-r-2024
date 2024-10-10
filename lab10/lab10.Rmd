@@ -1,0 +1,51 @@
+---
+title: "lab10"
+author: "Antoniuk Davyd"
+date: "2024-05-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+H0 zawarta liczba kalorii ma rozklad normalny 
+
+```{r}
+#qqnorm()
+```
+
+ZADANIE 10.1
+```{r}
+x <- dane1$wołowe
+y <- na.omit(dane1$drobiowe)
+a1 <- 0.01
+n1 <- length(x)
+n2 <- length(y)
+x_bar <- mean(x)
+y_bar <- mean(y)
+s12 <- var(x)
+s22 <- var(y)
+n1
+n2
+```
+
+```{r}
+dane <- openxlsx::read.xlsx("hot_dog.xlsx")
+```
+
+```{r}
+qqnorm(dane$wołowe)
+```
+```{r}
+alpha <- 0.05
+```
+
+```{r}
+qqnorm(dane$drobiowe)
+```
+
+```{r}
+
+```
+

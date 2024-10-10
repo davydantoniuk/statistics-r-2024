@@ -1,0 +1,108 @@
+---
+title: "lab4"
+author: "Antoniuk Davyd"
+date: "2024-03-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+library(stats)
+```
+
+
+**Zadanie 4.1(a)**
+```{r}
+curve(dweibull(x, 10, 0.5), from=0, to=3,col="red", main = "Porównanie funkcji gęstości rozkładu Weibulla z różnymi parametrami",ylab = "Gęstość prawdopodobieństwa")
+curve(dweibull(x, 10,1), from=0, to=3, col="green",add = T)
+curve(dweibull(x, 10,2), from=0, to=3, col="blue",add = T)
+legend("topright",legend=c("β=0.5","β=1","β=2"),
+col = c("red","green","blue"),lwd=1)
+print()
+```
+
+**Zadanie 4.1(b)**
+```{r}
+curve(dweibull(x, 0.5, 0.5), from=0, to=3,col="red", main = "Porównanie funkcji gęstości rozkładu Weibulla z różnymi parametrami",ylab = "Gęstość prawdopodobieństwa")
+curve(dweibull(x, 1,0.5), from=0, to=3, col="green",add = T)
+curve(dweibull(x, 2,0.5), from=0, to=3, col="blue",add = T)
+legend("topright",legend=c("α=0.5","α=1","α=2"),
+col = c("red","green","blue"),lwd=1)
+```
+
+**Zadanie 4.2**
+```{r}
+par(mfrow=c(1,2))
+curve (pexp(x,2), from=0, to = 6, col="red", lwd=2, main="Rozkład wykładniczy = 2", y = "Prawdopodobieństwo")
+curve(pweibull (x,1,0.5), from=0, to = 6,col="blue", lwd=2, main="Rozkład Weibulla n = 1 β =
+0.5", y = "Prawdopodobieństwo")
+par(mfrow=c(1,1))
+```
+
+**Zadanie 4.3**
+```{r}
+a <- 0.6
+beta <- 1000
+
+# (a) Średni czas awarii
+mean_time <- round(beta * gamma(1 + 1/a),2)
+print(paste("Średni czas awarii:", round(mean_time-1,0), "godzin i 36 minut"))
+
+# (b) Odchylenie standardowe
+sd_time <- round(sqrt(beta^2 * (gamma(1 + 2/a) - (gamma(1 + 1/a))^2)),2)
+print(paste("Odchylenie standardowe czasu awarii:", sd_time, "godzin"))
+print(" Parametr β=1000 powoduje, że istnieje większe prawdopodobieństwo wystąpienia wartości odstających i dłuższych czasów awarii w porównaniu do rozkładów o mniejszym β.Odchylenie standardowe wynoszące 2645.14 godzin oznacza, że istnieje znaczna zmienność w czasach awarii ekranów")
+
+# (c) Prawdopodobieństwo, że czas awarii jest większy niż 5000 godzin
+prob_gt_5000 <- 1 - pweibull(5000, shape = a, scale = beta)
+print(paste("Prawdopodobieństwo, że czas awarii jest większy niż 5000 godzin:", prob_gt_5000))
+
+# (d) Kwantyl rzędu 0.9
+quantile_90 <- qweibull(0.9, shape = a, scale = beta)
+print(paste("Kwantyl rzędu 0.9 czasu awarii:", quantile_90, "godzin"))
+print("Tzn. że tylko 10% ekranów będzie dzialać dlużej niż ten czas")
+#Kwantyl ten stanowi granicę, po której przekroczeniu 90% przypadków będzie miało czas awarii niższy niż podana wartość
+```
+
+```{r message=TRUE, warning=TRUE}
+# library(shiny)
+# library(ggplot2)
+# library(fitdistrplus)
+# ui <- fluidPage(
+#   titlePanel("Interaktywny Rozkład Weibulla"),
+# 
+#   sidebarLayout(
+#     sidebarPanel(
+#       sliderInput("shape", "Parametr kształtu (α)", min = 0.1, max = 10, value = 1, step = 0.1),
+#       sliderInput("scale", "Parametr skali (β)", min = 0.1, max = 10, value = 1, step = 0.1)
+#     ),
+# 
+#     mainPanel(
+#       plotOutput("pdfPlot"),
+#       plotOutput("cdfPlot")
+#     )
+#   )
+# )
+# 
+# server <- function(input, output) {
+#   output$pdfPlot <- renderPlot({
+#     shape <- input$shape
+#     scale <- input$scale
+# 
+#     x <- seq(0, 10, length.out = 1000)
+#     y <- dweibull(x, shape, scale)
+# 
+#     ggplot() +
+#       geom_line(aes(x, y), color = "blue", size = 1) +
+#       labs(title = "Funkcja Gęstości Rozkładu Weibulla",
+#            x = "x", y = "Gęstość") +
+#       theme_minimal()
+#   })
+# }
+# shinyApp(ui = ui, server = server)
+```
+

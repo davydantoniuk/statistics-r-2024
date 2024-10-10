@@ -1,0 +1,89 @@
+---
+title: "Lab12"
+author: "Davyd Antoniuk"
+date: "2024-05-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Zadanie 1
+
+$H_0:$ szerokość działki kielicha nie zależy od gatunku
+
+$H_1:$ szerokość działki kielicha zależy od gatunku
+
+duży - większy równy medianie
+
+mały - mniejszy od mediany.
+```{r}
+dane <- iris
+dane$Sepal.Width <- ifelse(dane$Sepal.Width >= median(dane$Sepal.Width), 'duży', 'mały')
+mk <- table(dane$Species, dane$Sepal.Width) # macierz kontyngencji
+mk
+```
+
+```{r warning=FALSE}
+library(ggplot2)
+library(ggmosaic)
+barplot(t(mk),beside=TRUE, col = c("lightgreen", "lightblue"), legend.text = colnames(mk),main="Kategoria szerokości działki kielicha a Gatunek", xlab  = "Gatunek",ylab = "Liczba")
+mosaicplot(mk, col = c("lightgreen", "lightblue"),
+           main = "Kategoria szerokości działki kielicha a gatunek",
+           xlab = "Gatunek",
+           ylab = "Kategoria szerokości działki kielicha")
+```
+
+```{r}
+chisq.test(mk)
+```
+
+Ponieważ p wartość 1.241e-11 jest mniejsza niż 0.05, więc mamy podstawy do odrzucenia hipotezy zerowej. Możemy przypuszczać, że gatunek ma wpływ na szerokość działki kielicha
+
+## Zadanie 2
+
+```{r}
+dane2 <- matrix(c(83, 173, 40, 17, 20, 84, 17, 94, 5, 29, 14, 16), ncol = 3, nrow = 4)
+row.names(dane2) <- c('czarne', 'brązowe', 'rode', 'blond')
+colnames(dane2) <- c('brązowe', 'niebieskie', 'zielone')
+dane2
+```
+
+$H_0:$ kolor oczu nie zależy od koloru włosów
+
+$H_1:$ kolor oczu zależy od koloru włosów
+
+```{r}
+barplot(t(dane2),beside=TRUE, col = c("brown", "lightblue", "lightgreen"), legend.text = colnames(dane2),main = "Kolor oczu a Kolor włosów",
+        xlab = "Kolor włosów", 
+        ylab = "Liczba osób")
+mosaicplot(dane2, col = c("brown", "lightblue", "lightgreen"),main = "Kolor oczu a Kolor włosów",
+        xlab = "Kolor włosów", 
+        ylab = "Kolor oczu",las=1)
+```
+
+```{r}
+chisq.test(dane2)
+```
+
+Ponieważ p wartość 2.2e-16 jest mniejsza niż 0.05, więc mamy podstawy do odrzucenia hipotezy zerowej. Możemy przypuszczać, że kolor oczu zależy od koloru włosów
+
+```{r warning=FALSE}
+library(DescTools)
+```
+
+```{r}
+ContCoef(dane2) #Współczynnikiem kontyngencji C Pearsona
+```
+
+
+```{r}
+TschuprowT(dane2) #wspólczynnik T Czuprowa
+```
+
+```{r}
+Assocs(dane2)# funkcja która jednocześnie oblicza większość wspólczynników 
+```
+
+

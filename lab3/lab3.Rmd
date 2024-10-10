@@ -1,0 +1,36 @@
+---
+title: "lab3"
+author: "Antoniuk Davyd"
+date: "2024-03-18"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(openxlsx)
+library(PerformanceAnalytics)
+```
+
+```{r}
+dane <- read.xlsx("stezenieolowiu.xlsx")
+```
+
+Wiadomo że zmienne mają rozkład normalny, jeślo to niewiadome to załóżmy to, ta korelacja jest śilnia.
+
+```{r}
+round(cor(dane$zmierzone,dane$znane,method = "pearson"),3)
+```
+
+```{r}
+round(cor(dane$zmierzone,dane$znane,method = "spearman"),3)
+```
+
+```{r}
+round(cor(dane$zmierzone,dane$znane,method = "kendal"),3)
+```
+Zależnośc są silnia.
+Raz ze wzrostem sprzenzenia znanego wśrednie rośnie wsprzenzenie zmierzone
+
